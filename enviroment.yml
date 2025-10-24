@@ -1,0 +1,14 @@
+name: formal-feature-attribution
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - jupyter
+  - matplotlib
+  - numpy
+  - pandas
+  - scikit-learn
+  - pip:
+    - -r requirements.txt
