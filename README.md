@@ -1,6 +1,6 @@
 # FFA
 
-This repository contains the implementation used in the CoRR report. The implementation aims at generating exact and approximate feature attribution in gradient boosted tress (BTs) based on formal explanation enumeration by applying apparatus of formal explainable AI (XAI). Formal feature attribution (FFA) is argued to be advantageous over the existing methods, both formal and non-formal. 
+This repository contains the implementation used in the CoRR report. The implementation aims at generating exact and approximate feature attribution in gradient boosted tress (BTs) based on formal explanation enumeration by applying apparatus of formal explainable AI (XAI). Formal feature attribution (FFA) is argued to be advantageous over the existing methods, both formal and non-formal... 
 
 
 ## Instruction <a name="instrt"></a>
