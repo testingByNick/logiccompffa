@@ -91,3 +91,63 @@ $ cd ./src/ & ./experiment/repro_exp.sh
 ```
 
 Since the total number of datasets and instances considered is large, running the experiments will take a while.
+
+## Instalation <a name=instl></a>
+
+### Method 1: Using Conda (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/formal-feature-attribution.git
+cd formal-feature-attribution
+
+# Create and activate conda environment
+conda env create -f environment.yml
+conda activate formal-feature-attribution
+```
+### Method 2: Using Pip and Venv
+```bash
+# Clone the repository
+git clone https://github.com/your-username/formal-feature-attribution.git
+cd formal-feature-attribution
+
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Linux/Mac:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+### Method 3: Development Installation
+```bash
+
+# Clone and install in development mode
+git clone https://github.com/your-username/formal-feature-attribution.git
+cd formal-feature-attribution
+
+# Using conda
+conda env create -f environment.yml
+conda activate formal-feature-attribution
+
+# Or using pip
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+
+# Install package in development mode
+pip install -e .
+```
+### Installation Verification
+```bash
+# Verify successful installation
+python -c "import src.formal_ffa; print('✅ FFA imported successfully!')"
+python -c "import xgboost; import lime; print('✅ Dependencies loaded!')"
+
+# Run basic tests
+python -m pytest tests/ -v
+```
