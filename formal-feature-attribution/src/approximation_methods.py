@@ -146,9 +146,7 @@ class ApproximationMethods:
             if np.sum(attributions) > 0:
                 attributions = attributions / np.sum(attributions)
             else:
-                attributions = np.ones(self.n_features) / self.n_features
-            
-            return attributions
+                attributions = np.ones(self.n_features) / 
             
         except Exception as e:
             warnings.warn(f"Erro no SHAP: {e}")
