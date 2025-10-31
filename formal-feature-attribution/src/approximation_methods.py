@@ -11,7 +11,7 @@ class ApproximationMethods:
     """
     Implementa métodos de aproximação para comparação com FFA:
     - LIME
-    - SHAP
+    - SHAP (aproximação)
     - Permutation Importance
     """
     
@@ -23,24 +23,29 @@ class ApproximationMethods:
     def permutation_importance(self, X: np.ndarray, y: np.ndarray, 
                              n_repeats: int = 10) -> np.ndarray:
         """
+        Calcula importância por permutação
+        
         Args:
             X: Dados de entrada
             y: Labels
             n_repeats: Número de repetições
-
+            
         Returns:
             np.ndarray: Scores de importância normalizados
         """
         try:
+            # Implementação simplificada para controle
             baseline_score = accuracy_score(y, self.model.predict(X))
             importances = np.zeros(self.n_features)
             
             for i in range(self.n_features):
                 X_permuted = X.copy()
+                # Permuta a feature i
                 X_permuted[:, i] = np.random.permutation(X_permuted[:, i])
                 permuted_score = accuracy_score(y, self.model.predict(X_permuted))
                 importances[i] = max(0, baseline_score - permuted_score)
             
+            # Normaliza
             if np.sum(importances) > 0:
                 importances = importances / np.sum(importances)
             else:
@@ -55,7 +60,7 @@ class ApproximationMethods:
     def lime_attribution(self, X: np.ndarray, instance_idx: int, 
                         num_features: Optional[int] = None) -> np.ndarray:
         """
-        Usando LIME
+        Calcula atribuição usando LIME
         
         Args:
             X: Dados de entrada
@@ -84,6 +89,7 @@ class ApproximationMethods:
                 num_features=num_features
             )
             
+            # Converte para array de scores
             lime_scores = np.zeros(self.n_features)
             for feature, score in exp.as_list():
                 for i, name in enumerate(self.feature_names):
@@ -91,6 +97,7 @@ class ApproximationMethods:
                         lime_scores[i] = abs(score)
                         break
             
+            # Normaliza
             if np.sum(lime_scores) > 0:
                 lime_scores = lime_scores / np.sum(lime_scores)
             else:
@@ -105,7 +112,7 @@ class ApproximationMethods:
     def shap_approximation(self, X: np.ndarray, instance_idx: int, 
                           num_samples: int = 50) -> np.ndarray:
         """
-        Aproximação do SHAP
+        Aproximação do SHAP baseada em valores de baseline
         
         Args:
             X: Dados de entrada
@@ -143,10 +150,13 @@ class ApproximationMethods:
                 else:
                     attributions[i] = 0.0
             
+            # Normaliza
             if np.sum(attributions) > 0:
                 attributions = attributions / np.sum(attributions)
             else:
-                attributions = np.ones(self.n_features) / 
+                attributions = np.ones(self.n_features) / self.n_features
+            
+            return attributions
             
         except Exception as e:
             warnings.warn(f"Erro no SHAP: {e}")
