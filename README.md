@@ -151,3 +151,38 @@ python -c "import xgboost; import lime; print('✅ Dependencies loaded!')"
 # Run basic tests
 python -m pytest tests/ -v
 ```
+## For Developers <a name=FDev></a>
+
+```bash
+# Instalação com dependências de desenvolvimento
+pip install -r requirements.txt
+pip install -e .[dev]  # Se tiver extras de desenvolvimento
+
+# Configure pre-commit hooks (opcional)
+pre-commit install
+```
+## Solutions for common problems <a name=Solution></a>
+
+### Problem: Lime with error
+```bash
+# No Linux/Mac
+sudo apt-get install python3-dev  # Ubuntu/Debian
+# ou
+brew install python3              # Mac
+
+# No Windows, garantir que o Visual Studio Build Tools está instalado
+```
+
+### Problem: XGBoost with error 
+```bash
+# Instalação alternativa do XGBoost
+pip install xgboost --upgrade
+# ou
+conda install -c conda-forge xgboost
+```
+### Problem: Conflict with versions
+```bash
+# Recrie o ambiente do zero
+conda env remove -n formal-feature-attribution
+conda env create -f environment.yml
+```
