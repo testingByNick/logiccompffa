@@ -44,6 +44,13 @@ class FormalFFA:
         except Exception as e:
             warnings.warn(f"Erro na verificação AXp: {e}")
             return False
+
+    def enumerate_axps_marco(self, instance: np.ndarray, target: int) -> List[Set[int]]:
+    """
+    Implementa o algoritmo MARCO do artigo para enumeração eficiente de AXp's
+    """
+    # TODO: Implementar algoritmo de hitting set duality
+    pass
     
     def compute_ffa(self, instance: np.ndarray, target: int, 
                    n_combinations: int = 50) -> np.ndarray:
