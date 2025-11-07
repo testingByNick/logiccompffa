@@ -49,7 +49,8 @@ class FormalFFA:
     """
     Implementa o algoritmo MARCO do artigo para enumeração eficiente de AXp's
     """
-    # TODO: Implementar algoritmo de hitting set duality
+    
+    
     pass
     
     def compute_ffa(self, instance: np.ndarray, target: int, 
