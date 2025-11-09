@@ -1,3 +1,14 @@
+#Cada exemplo deve visar comparar qualitativa e quantitativamente métodos de atribuição de características:
+
+#FFA (Atribuição Formal de Características) — exata quando possível; aproximações via enumeração.
+
+#LIME / SHAP — métodos baseados em amostragem local (heurísticos).
+
+#WFFA — variante ponderada da FFA que penaliza explicações maiores.
+
+
+
+
 #!/usr/bin/env bash
 set -euo pipefail
 # exp_tabular.sh - reproduz/reescreve comparativo tabular FFA vs LIME vs SHAP
