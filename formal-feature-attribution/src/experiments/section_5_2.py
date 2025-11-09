@@ -40,14 +40,3 @@ def run_section_5_2(results_5_1):
         
         lime_attributions = []
         shap_attributions = []
-        
-        for idx in sample_indices:
-            print(f"📈 Processando instância {idx}...")
-            
-            lime_attr = approx_methods.lime_attribution(X_test, idx)
-            shap_attr = approx_methods.shap_approximation(X_test, idx)
-            
-            lime_attributions.append(lime_attr)
-            shap_attributions.append(shap_attr)
-        
-        metrics = {}
