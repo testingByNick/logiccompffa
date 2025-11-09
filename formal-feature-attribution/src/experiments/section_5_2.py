@@ -40,3 +40,50 @@ def run_section_5_2(results_5_1):
         
         lime_attributions = []
         shap_attributions = []
+        
+        for idx in sample_indices:
+            print(f"📈 Processando instância {idx}...")
+            
+            lime_attr = approx_methods.lime_attribution(X_test, idx)
+            shap_attr = approx_methods.shap_approximation(X_test, idx)
+            
+            lime_attributions.append(lime_attr)
+            shap_attributions.append(shap_attr)
+        
+        metrics = {}
+        for i, idx in enumerate(sample_indices):
+            formal_attr = formal_attributions[i]
+            lime_attr = lime_attributions[i]
+            shap_attr = shap_attributions[i]
+            
+            instance_metrics = {
+                'correlations': calculate_correlations(formal_attr, lime_attr, shap_attr, perm_importance),
+                'ranking_metrics': calculate_ranking_metrics(formal_attr, lime_attr, shap_attr, perm_importance)
+            }
+            metrics[idx] = instance_metrics
+        
+        comparison_results[dataset_name] = {
+            'permutation_importance': perm_importance,
+            'lime_attributions': lime_attributions,
+            'shap_attributions': shap_attributions,
+            'formal_attributions': formal_attributions,
+            'sample_indices': sample_indices,
+            'feature_names': feature_names,
+            'metrics': metrics
+        }
+        
+        print(f"✅ {len(sample_indices)} instâncias processadas")
+        
+        print("\n📊 RESUMO DAS CORRELAÇÕES:")
+        for idx in sample_indices:
+            corrs = metrics[idx]['correlations']
+            print(f"   Instância {idx}:")
+            print(f"     FFA vs LIME: {corrs['ffa_vs_lime']:.3f}")
+            print(f"     FFA vs SHAP: {corrs['ffa_vs_shap']:.3f}")
+            print(f"     LIME vs SHAP: {corrs['lime_vs_shap']:.3f}")
+    
+    print("\n" + "=" * 70)
+    print("✅ SEÇÃO 5.2 CONCLUÍDA")
+    print("=" * 70)
+    
+    return comparison_results
