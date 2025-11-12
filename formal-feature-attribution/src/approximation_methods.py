@@ -108,20 +108,7 @@ class ApproximationMethods:
         except Exception as e:
             warnings.warn(f"Erro no LIME: {e}")
             return np.ones(self.n_features) / self.n_features
-    
-    def shap_approximation(self, X: np.ndarray, instance_idx: int, 
-                          num_samples: int = 50) -> np.ndarray:
-        """
-        Aproximação do SHAP baseada em valores de baseline
-        
-        Args:
-            X: Dados de entrada
-            instance_idx: Índice da instância a explicar
-            num_samples: Número de amostras para cálculo
-            
-        Returns:
-            np.ndarray: Scores de atribuição aproximados
-        """
+
         try:
             baseline = np.median(X, axis=0)
             instance = X[instance_idx]
