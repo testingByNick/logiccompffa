@@ -44,7 +44,34 @@ class FormalFFA:
         except Exception as e:
             warnings.warn(f"Erro na verificação AXp: {e}")
             return False
-  
+    
+    def compute_ffa(self, instance: np.ndarray, target: int, 
+                   n_combinations: int = 50) -> np.ndarray:
+        """
+        Args:
+            instance: Instância a ser explicada
+            target: Classe alvo
+            n_combinations: Número de combinações para testar
+            
+        Returns:
+            np.ndarray: Scores de atribuição para cada feature
+        """
+        scores = np.zeros(self.n_features)
+        tested_subsets = 0
+        
+        for _ in range(n_combinations):
+            subset_size = np.random.randint(1, self.n_features + 1)
+            subset = set(np.random.choice(self.n_features, subset_size, replace=False))
+            
+            if self.check_axp(instance, subset, target, n_samples=20):
+                for feature in subset:
+                    scores[feature] += 1
+                tested_subsets += 1
+        
+        if tested_subsets > 0:
+            scores = scores / tested_subsets
+        
+        return scores
 
 
 class HeuristicFFA:

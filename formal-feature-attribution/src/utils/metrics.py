@@ -20,24 +20,19 @@ def calculate_correlations(ffa_attr: np.ndarray, lime_attr: np.ndarray,
     correlations = {}
     
     try:
-        # FFA vs LIME
         corr, _ = kendalltau(ffa_attr, lime_attr)
         correlations['ffa_vs_lime'] = corr if not np.isnan(corr) else 0.0
         
-        # FFA vs SHAP
         corr, _ = kendalltau(ffa_attr, shap_attr)
         correlations['ffa_vs_shap'] = corr if not np.isnan(corr) else 0.0
         
-        # FFA vs Permutation
         corr, _ = kendalltau(ffa_attr, perm_attr)
         correlations['ffa_vs_perm'] = corr if not np.isnan(corr) else 0.0
         
-        # LIME vs SHAP
         corr, _ = kendalltau(lime_attr, shap_attr)
         correlations['lime_vs_shap'] = corr if not np.isnan(corr) else 0.0
         
     except Exception as e:
-        # Valores padrão em caso de erro
         correlations = {
             'ffa_vs_lime': 0.0,
             'ffa_vs_shap': 0.0, 
@@ -83,7 +78,7 @@ def calculate_ranking_metrics(ffa_attr: np.ndarray, lime_attr: np.ndarray,
     metrics['top_features'] = top_features
     
     top_indices = [top['feature_index'] for top in top_features.values()]
-    agreement = len(set(top_indices)) == 1 
+    agreement = len(set(top_indices)) == 1  
     
     metrics['top_feature_agreement'] = agreement
     metrics['unique_top_features'] = len(set(top_indices))
