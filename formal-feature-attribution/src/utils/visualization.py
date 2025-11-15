@@ -72,4 +72,67 @@ def generate_final_report(results_5_1: Dict[str, Any], results_5_2: Dict[str, An
     print("📊 RELATÓRIO FINAL - ANÁLISE DOS RESULTADOS")
     print("=" * 70)
     
-   
+    os.makedirs(output_dir, exist_ok=True)
+    
+    for dataset_name in results_5_1.keys():
+        print(f"\n🎯 DATASET: {dataset_name.upper()}")
+        print("-" * 50)
+        
+        perf = results_5_1[dataset_name]['performance']
+        print(f"📈 Performance do Modelo:")
+        print(f"   Acurácia Treino: {perf['train_accuracy']:.3f}")
+        print(f"   Acurácia Teste:  {perf['test_accuracy']:.3f}")
+        
+        if dataset_name in results_5_2:
+            metrics_data = results_5_2[dataset_name]['metrics']
+            
+            print(f"\n🔍 ANÁLISE DE CONCORDÂNCIA:")
+            avg_correlations = {
+                'ffa_vs_lime': 0.0,
+                'ffa_vs_shap': 0.0,
+                'lime_vs_shap': 0.0
+            }
+            
+            for instance_idx, metrics in metrics_data.items():
+                corrs = metrics['correlations']
+                avg_correlations['ffa_vs_lime'] += corrs['ffa_vs_lime']
+                avg_correlations['ffa_vs_shap'] += corrs['ffa_vs_shap']
+                avg_correlations['lime_vs_shap'] += corrs['lime_vs_shap']
+            
+            n_instances = len(metrics_data)
+            for key in avg_correlations:
+                avg_correlations[key] /= n_instances
+            
+            print(f"   Correlações Médias (Kendall's Tau):")
+            print(f"     FFA vs LIME:  {avg_correlations['ffa_vs_lime']:7.3f}")
+            print(f"     FFA vs SHAP:  {avg_correlations['ffa_vs_shap']:7.3f}")
+            print(f"     LIME vs SHAP: {avg_correlations['lime_vs_shap']:7.3f}")
+            
+            agreement_count = 0
+            for instance_idx, metrics in metrics_data.items():
+                if metrics['ranking_metrics']['top_feature_agreement']:
+                    agreement_count += 1
+            
+            agreement_rate = agreement_count / n_instances
+            print(f"\n🎯 CONCORDÂNCIA NO TOP FEATURE:")
+            print(f"   Taxa de concordância: {agreement_rate:.1%} ({agreement_count}/{n_instances} instâncias)")
+    
+    print(f"\n📈 GERANDO GRÁFICOS...")
+    for dataset_name in results_5_1.keys():
+        if dataset_name in results_5_2:
+            comp_results = results_5_2[dataset_name]
+            sample_indices = comp_results['sample_indices']
+            
+            for i, instance_idx in enumerate(sample_indices):
+                plot_data = {
+                    'feature_names': comp_results['feature_names'],
+                    'formal_attributions': comp_results['formal_attributions'],
+                    'lime_attributions': comp_results['lime_attributions'],
+                    'shap_attributions': comp_results['shap_attributions'],
+                    'permutation_importance': comp_results['permutation_importance']
+                }
+                
+                save_path = f"{output_dir}/{dataset_name}_instance_{instance_idx}.png"
+                plot_attribution_comparison(plot_data, dataset_name, i, save_path)
+    
+    print(f"\n✅ RELATÓRIO GERADO E SALVO EM: {output_dir}")
