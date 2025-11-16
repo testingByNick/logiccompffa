@@ -186,3 +186,26 @@ conda install -c conda-forge xgboost
 conda env remove -n formal-feature-attribution
 conda env create -f environment.yml
 ```
+
+## References <a name=references></a>
+
+### Main Article
+
+```bash
+@article{yu2023formal,
+  title={On Formal Feature Attribution and Its Approximation},
+  author={Yu, Jinqiang and Ignatiev, Alexey and Stuckey, Peter J.},
+  journal={arXiv preprint arXiv:230X.XXXXX},
+  year={2023}
+}
+```
+
+### Main dependencies 
+
+• XGBoost: Chen & Guestrin (2016) - Modelos ensemble
+
+• LIME: Ribeiro et al. (2016) - Explicações locais
+
+• SHAP: Lundberg & Lee (2017) - Valores de Shapley
+
+• Z3: Microsoft Research - Solver SAT/SMT
