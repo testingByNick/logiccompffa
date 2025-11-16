@@ -1,0 +1,19 @@
+📖 Sobre o Projeto
+Este projeto implementa e valida os experimentos de Atribuição Formal de Características (FFA) propostos no artigo, comparando métodos formais com abordagens de aproximação tradicionais como LIME e SHAP.
+
+🎯 Objetivos Principais
+✅ Implementar o método Formal Feature Attribution (FFA) conforme definição formal do artigo
+
+✅ Reproduzir experimentos com datasets sintéticos de diferentes complexidades
+
+✅ Comparar systematicamente FFA com métodos de aproximação (LIME, SHAP, Permutation Importance)
+
+✅ Validar resultados através de métricas robustas (Kendall's Tau, RBO, análise de concordância)
+
+
+📚 Referências
+Artigo Principal: Yu, J., Ignatiev, A., & Stuckey, P. J. (2023). On Formal Feature Attribution and Its Approximation
+
+Repositório Original: ffattr/ffa
+
+XAI Foundations: Marques-Silva, J., & Ignatiev, A. (2022). Delivering trustworthy AI through formal XAI
