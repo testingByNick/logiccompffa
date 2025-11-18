@@ -44,3 +44,29 @@ class TestFormalFFA(unittest.TestCase):
         self.assertEqual(self.heuristic_ffa.n_features, 4)
         self.assertEqual(len(self.heuristic_ffa.feature_names), 4)
     
+    def test_compute_ffa_output_shape(self):
+        """Testa se FFA retorna vetor com shape correto"""
+        instance = np.array([0.5, 0.5, 0.5, 0.5])
+        target = 1
+        
+        scores = self.formal_ffa.compute_ffa(instance, target, n_combinations=10)
+        
+        self.assertEqual(scores.shape, (4,))
+        self.assertTrue(np.all(scores >= 0))
+        self.assertTrue(np.all(scores <= 1))
+    
+    def test_heuristic_ffa_output(self):
+        """Testa saída do HeuristicFFA"""
+        instance = np.array([0.5, 0.5, 0.5, 0.5])
+        target = 1
+        
+        scores = self.heuristic_ffa.compute(instance, target, n_samples=10)
+        
+        self.assertEqual(scores.shape, (4,))
+        self.assertTrue(np.all(scores >= 0))
+        # Verifica se scores são normalizados (soma ≈ 1)
+        self.assertAlmostEqual(np.sum(scores), 1.0, places=5)
+
+
+if __name__ == '__main__':
+    unittest.main()
