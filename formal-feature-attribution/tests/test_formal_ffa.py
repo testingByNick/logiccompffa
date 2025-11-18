@@ -31,3 +31,16 @@ class TestFormalFFA(unittest.TestCase):
         self.heuristic_ffa = HeuristicFFA(
             self.model, [f'F{i}' for i in range(4)], 4
         )
+    
+    def test_formal_ffa_initialization(self):
+        """Testa inicialização do FormalFFA"""
+        self.assertIsNotNone(self.formal_ffa)
+        self.assertEqual(self.formal_ffa.n_features, 4)
+        self.assertEqual(len(self.formal_ffa.feature_bounds), 4)
+    
+    def test_heuristic_ffa_initialization(self):
+        """Testa inicialização do HeuristicFFA"""
+        self.assertIsNotNone(self.heuristic_ffa)
+        self.assertEqual(self.heuristic_ffa.n_features, 4)
+        self.assertEqual(len(self.heuristic_ffa.feature_names), 4)
+    
