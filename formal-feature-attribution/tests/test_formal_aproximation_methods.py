@@ -39,7 +39,22 @@ class TestApproximationMethods(unittest.TestCase):
         # Verifica normalização
         self.assertAlmostEqual(np.sum(importance), 1.0, places=5)
     
+    def test_lime_attribution(self):
+        """Testa atribuição LIME"""
+        attribution = self.approx_methods.lime_attribution(self.X, 0)
+        
+        self.assertEqual(attribution.shape, (4,))
+        self.assertTrue(np.all(attribution >= 0))
+        self.assertTrue(np.all(attribution <= 1))
     
+    def test_shap_approximation(self):
+        """Testa aproximação SHAP"""
+        attribution = self.approx_methods.shap_approximation(self.X, 0, num_samples=10)
+        
+        self.assertEqual(attribution.shape, (4,))
+        self.assertTrue(np.all(attribution >= 0))
+        self.assertTrue(np.all(attribution <= 1))
+
 
 if __name__ == '__main__':
     unittest.main()
