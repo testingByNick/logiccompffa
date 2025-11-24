@@ -1,17 +1,15 @@
-#Cada exemplo deve visar comparar qualitativa e quantitativamente métodos de atribuição de características:
+#Método de aproximação (algoritmo) — XPENUM / estratégia prática
 
-#FFA (Atribuição Formal de Características) — exata quando possível; aproximações via enumeração.
+#Quem apresenta: Membro C
+#O que cobrir (slides):
 
-#LIME / SHAP — métodos baseados em amostragem local (heurísticos).
+#Por que é preciso aproximar (FFA exata nem sempre viável).
 
-#WFFA — variante ponderada da FFA que penaliza explicações maiores.
+#Explicar a estratégia principal do artigo: usar enumeração contínua tipo MARCO, mas mirando CXp para rapidamente obter muitas explicações duais e assim coletar AXp “de graça” — ideia do Algoritmo 1 (XPENUM). Mostre pseudo-código/fluxo.
 
+#Como a aproximação converge (monotonicidade da FFA aproximada conforme aumenta o tempo/numero de explicações).
 
-
-
-#!/usr/bin/env bash
-set -euo pipefail
-# exp_tabular.sh - reproduz/reescreve comparativo tabular FFA vs LIME vs SHAP
+#Implementação prática (protótipo em Python, repositório do código disponível).
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC_DIR="$REPO_ROOT/src"
