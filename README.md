@@ -1,197 +1,104 @@
-# FFA
+# Formal Feature Attribution (FFA) — README
 
-This repository contains the implementation used in the CoRR report. The implementation aims at generating exact and approximate feature attribution in gradient boosted tress (BTs) based on formal explanation enumeration by applying apparatus of formal explainable AI (XAI). Formal feature attribution (FFA) is argued to be advantageous over the existing methods, both formal and non-formal. 
+## Tema
+
+Este repositório contém a implementação utilizada no relatório CoRR. O objetivo é gerar atribuição de recursos (*feature attribution*) exata e aproximada em **Árvores Impulsionadas por Gradiente (BTs)** com base na enumeração de explicações formais, aplicando o aparato da **IA Explicável Formal (XAI)**. A **Formal Feature Attribution (FFA)** é considerada vantajosa em relação aos métodos existentes, tanto formais quanto não formais.
+
+---
+
+## Definições rápidas
+
+* **Formal Feature Attribution (FFA)**: Um método para gerar atribuição de recursos exata e aproximada em árvores impulsionadas por gradiente (BTs) com base na enumeração de explicações formais, aplicando o aparato da IA Explicável Formal (XAI). Argumenta-se que o FFA é vantajoso em relação aos métodos existentes, tanto formais quanto não formais.
+* **Abductive Explanations (AXp's)**: Explicações que podem ser enumeradas como "Dual Explanations" para as árvores impulsionadas.
+
+---
+
+## Metodologia de Uso e Implementação
+
+O repositório contém a implementação utilizada no relatório CoRR. Antes de usar, é necessário extrair os conjuntos de dados contidos em `datasets.tar.xz`. Para extrair, use:
 
 
-## Instruction <a name="instrt"></a>
-Before using the implementation, we need to extract the datasets stored in ```datasets.tar.xz```. To extract the datasets, please ensure ```tar``` is installed and run:
-```
+$ tar -xvf datasets.tar.xz
+### 📦 Requisitos e Instalação
+A implementação é feita em scripts Python (versão 3.8.5 usada nos experimentos).
+
+### Pacotes Necessários: Os requisitos estão listados em requirements.txt. Instale-os via pip install -r requirements.txt.
+
+### Extração de Dados:
+
+```bash
+
 $ tar -xvf datasets.tar.xz
 ```
 
-## Table of Content
-* **[Required Packages](#require)** 
-* **[Usage](#usage)**
-	* [Example Tutorial](#tut)
-	* [Prepare a Dataset](#prepare)
-	* [Generate a Boosted Tree](#bt)
-	* [Enumerate Abductive Explanations (AXp's) as Dual Explanations](#enum)
-* **[Reproducing Experimental Results](#expr)**
+#### Métodos de Instalação (Recomendado: Conda)
 
-## Required Packages <a name="require"></a>
-The implementation is written as a set of Python scripts. The python version used in the experiments is 3.8.5. Some packages are required. To install requirements:
-```
-$ pip install -r requirements.txt
-```
+| Método | Passos Chave |
+| :--- | :--- |
+| **Conda** (Recomendado) | Clonar o repositório, `conda env create -f environment.yml`, `conda activate formal-feature-attribution`. |
+| **Pip e Venv** | Clonar, criar `venv`, ativar (`source venv/bin/activate` ou `venv\Scripts\activate`), `pip install -r requirements.txt`. |
+| **Desenvolvimento** | Instalar dependências, `pip install -e .` (para modo de edição). |
 
-## Usage <a name="usage"></a>
+---
+### 🛠️ Fluxo de Uso (Tutorial Básico)
 
-### Example Tutorial <a name="tut"></a> 
-For example usage, take a look at the following tutorial (generated from ipython notebooks):
-- [src/example.ipynb](src/example.ipynb)
+O uso de exemplo está em `src/example.ipynb`. O fluxo padrão envolve 3 etapas principais.
 
-Alternatively, we can follow the steps below:
+#### 1. Preparar o Conjunto de Dados (`-p`)
 
-### Preparing a dataset <a name="prepare"></a>  <a name="prepare"></a>
-First, change to the source directory
-```
-$ cd src/
-```
+O `FFA` trabalha com datasets em formato CSV. É necessário um arquivo `.catcol` listando os índices das colunas categóricas.
 
-`FFA` can address datasets in the CSV format. Before enumerating abductive explanations (AXp's) and generating feature attribution, we need to prepare the datasets the train a BT model.
-
-1. Assume a target dataset is stored in ```somepath/dataset.csv```
-2. Create an extra file named ```somepath/dataset.csv.catcol``` containing the indices of the categorical columns ofthe target dataset. For example, if columns ```0```, ```3```, and ```6``` are categorical features, the file should be as follow:
-	```
-	0
-	3
-	6
-	```
-3. With the two files above, we can run:
-```
+```bash
+# Exemplo (para um arquivo 'dataset.csv' e um novo nome 'somename')
 $ python explain.py -p --pfiles dataset.csv,somename somepath/
-```
-to create a new dataset file `somepath/somename_data.csv` with the categorical features properly addressed. For example:
-```
+# Exemplo real
 $ python explain.py -p --pfiles compas_train_data.csv,compas_train_data ../datasets/tabular/train/compas/
 ```
 
-### Training a gradient boosted tree model  <a name="bt"></a>
-A gradient boosted tree model is required before generating a decision set. Run the following command to train a BT model:
-```
+### 2. Treinar um Modelo Gradient Boosted Tree (`-c`)
+
+Um modelo de árvore impulsionada por gradiente (BT) é requerido antes de gerar um *decision set*.
+
+O valor do parâmetro `--testsplit` varia de `0.0` a `1.0`. Neste comando de exemplo, o dataset fornecido é dividido em 100% para treino e 0% para teste (`--testsplit 0`). O modelo gerado é salvo no caminho de saída especificado (`./btmodels/compas/`).
+
+```bash
+# Exemplo (25 árvores por classe, profundidade máxima 3)
 $ python ./explain.py -o ./btmodels/compas/ -c --testsplit 0 -t -n 25 -d 3 ../datasets/tabular/train/compas/compas_train_data.csv
 ```
-Here, a boosted tree consisting of 25 trees per class is trained, where the maximum depth of each tree is 3. ``` ../datasets/tabular/train/compas/compas_train_data.csv
- ``` is the dataset to be trained. The value of ```--testsplit``` ranges from 0.0 to 1.0. In this command line, the given dataset is split into 100% to train and 0% to test. ```./btmodels/compas/``` is the output path to store the trained model. In this example, the generated model is saved in ```./btmodels/compas/compas_train_data/compas_train_data_nbestim_25_maxdepth_3_testsplit_0.0.mod.pkl```
+Neste exemplo, o modelo é salvo em um arquivo com nome similar a: `./btmodels/compas/compas_train_data/compas_train_data_nbestim_25_maxdepth_3_testsplit_0.0.mod.pkl.`
 
+### 3. Enumerar Explicações Abductivas (AXp's) como Dual Explanations (`-e`)
 
-### Enumerating Abductive Explanations (AXp's) as Dual Explanations  <a name="enum"></a>
-To enumerate abductive or contrastive explanations for BTs, run:
-```
-$ python -u ./explain.py -e mx --am1 -E -T 1 -z -vvv -c --xtype <string> -R lin --sort abs --explain_ formal --xnum all -M --cut <int> --explains <dataset.csv> <model.pkl> 
+Use este comando para enumerar explicações abdutivas ou contrastivas (AXp's) para BTs.
 
-```
-Here, parameter ```--cut``` is optional, where the value of ```--cut``` indicate the instance index to enumeration explanations. By default, all instances in the dataset are considered. ```<dataset.csv>``` and ```<model.pkl>``` specify the dataset and BT model.
-
-For example:
-
-```
-$ python -u ./explain.py -e mx --am1 -E -T 1 -z -vvv -c --xtype con -R lin --sort abs --explain_ formal --xnum all -M --cut 5 --explains ../datasets/tabular/test/compas/compas_test_data.csv ./btmodels/compas/compas_train_data/compas_train_data_nbestim_25_maxdepth_3_testsplit_0.0.mod.pkl 
-```
-
-The command above will enumerate AXp's as dual explanations for *compas* dataset.
-
-
-## Reproducing  Experimental Results <a name="expr"></a>
-Due to randomization used in the sampling process in LIME and SHAP, it seems unlikely that the experimental results reported in the submission can be completely reproduced.
-Similar experimental results can be obtained by the following script:
-
-```
-$ cd ./src/ & ./experiment/repro_exp.sh
-```
-
-Since the total number of datasets and instances considered is large, running the experiments will take a while.
-
-## Instalation <a name=instl></a>
-
-### Method 1: Using Conda (Recommended)
+O parâmetro `--cut` é **opcional**. Seu valor indica o índice da instância específica para a qual se deseja enumerar explicações. Por padrão, todas as instâncias no dataset são consideradas. `<dataset.csv>` e `<model.pkl>` especificam o dataset de teste e o modelo BT treinado, respectivamente.
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/formal-feature-attribution.git
-cd formal-feature-attribution
+# Comando geral
+$ python -u ./explain.py -e mx --am1 -E -T 1 -z -vvv -c --xtype <string> -R lin --sort abs --explain_ formal --xnum all -M --cut <int> --explains <dataset.csv> <model.pkl>
 
-# Create and activate conda environment
-conda env create -f environment.yml
-conda activate formal-feature-attribution
-```
-### Method 2: Using Pip and Venv
-```bash
-# Clone the repository
-git clone https://github.com/your-username/formal-feature-attribution.git
-cd formal-feature-attribution
-
-# Create a virtual environment
-python -m venv venv
-
-# Activate the virtual environment
-# On Linux/Mac:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-### Method 3: Development Installation
-```bash
-
-# Clone and install in development mode
-git clone https://github.com/your-username/formal-feature-attribution.git
-cd formal-feature-attribution
-
-# Using conda
-conda env create -f environment.yml
-conda activate formal-feature-attribution
-
-# Or using pip
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-
-# Install package in development mode
-pip install -e .
-```
-### Installation Verification
-```bash
-# Verify successful installation
-python -c "import src.formal_ffa; print('✅ FFA imported successfully!')"
-python -c "import xgboost; import lime; print('✅ Dependencies loaded!')"
-
-# Run basic tests
-python -m pytest tests/ -v
-```
-## For Developers <a name=FDev></a>
-
-```bash
-# Instalação com dependências de desenvolvimento
-pip install -r requirements.txt
-pip install -e .[dev]  # Se tiver extras de desenvolvimento
-
-# Configure pre-commit hooks (opcional)
-pre-commit install
-```
-## Solutions for common problems <a name=Solution></a>
-
-### Problem: Lime with error
-```bash
-# No Linux/Mac
-sudo apt-get install python3-dev  # Ubuntu/Debian
-# ou
-brew install python3              # Mac
-
-# No Windows, garantir que o Visual Studio Build Tools está instalado
+# Exemplo (para a instância de índice 5 do dataset compas)
+$ python -u ./explain.py -e mx --am1 -E -T 1 -z -vvv -c --xtype con -R lin --sort abs --explain_ formal --xnum all -M --cut 5 --explains ../datasets/tabular/test/compas/compas_test_data.csv ./btmodels/compas/compas_train_data/compas_train_data_nbestim_25_maxdepth_3_testsplit_0.0.mod.pkl
 ```
 
-### Problem: XGBoost with error 
-```bash
-# Instalação alternativa do XGBoost
-pip install xgboost --upgrade
-# ou
-conda install -c conda-forge xgboost
-```
-### Problem: Conflict with versions
-```bash
-# Recrie o ambiente do zero
-conda env remove -n formal-feature-attribution
-conda env create -f environment.yml
-```
+---
 
-## References <a name=references></a>
+## 🎯 Reprodução Experimental
 
-### Main Article
+* Devido à **aleatoriedade** usada no processo de amostragem em **LIME** e **SHAP**, é improvável que os resultados experimentais relatados na submissão possam ser *completamente* reproduzidos.
+* Resultados **semelhantes** podem ser obtidos com o seguinte script:
+    ```bash
+    $ cd ./src/ & ./experiment/repro_exp.sh
+    ```
+* A execução dos experimentos levará algum tempo, pois o número total de datasets e instâncias consideradas é grande.
 
-```bash
+---
+
+## 📚 Referências
+
+### Artigo Principal
+
+```bibtex
 @article{yu2023formal,
   title={On Formal Feature Attribution and Its Approximation},
   author={Yu, Jinqiang and Ignatiev, Alexey and Stuckey, Peter J.},
@@ -200,12 +107,95 @@ conda env create -f environment.yml
 }
 ```
 
-### Main dependencies 
+## Instalação <a name="instl"></a>
 
-• XGBoost: Chen & Guestrin (2016) - Modelos ensemble
+### Método 1: Usando Conda (Recomendado)
 
-• LIME: Ribeiro et al. (2016) - Explicações locais
+```bash
+# Clone o repositório
+git clone [https://github.com/your-username/formal-feature-attribution.git](https://github.com/your-username/formal-feature-attribution.git)
+cd formal-feature-attribution
 
-• SHAP: Lundberg & Lee (2017) - Valores de Shapley
+# Crie e ative o ambiente conda
+conda env create -f environment.yml
+conda activate formal-feature-attribution
+```
+### Método 2: Usando Pip e Venv
 
-• Z3: Microsoft Research - Solver SAT/SMT
+```bash
+# Clone o repositório
+git clone [https://github.com/your-username/formal-feature-attribution.git](https://github.com/your-username/formal-feature-attribution.git)
+cd formal-feature-attribution
+
+# Crie um ambiente virtual
+python -m venv venv
+
+# Ative o ambiente virtual
+# No Linux/Mac:
+source venv/bin/activate
+# No Windows:
+venv\Scripts\activate
+
+# Instale as dependências
+pip install -r requirements.txt
+```
+### Método 3: Instalação para Desenvolvimento
+
+```bash
+# Clone e instale no modo de desenvolvimento
+git clone [https://github.com/your-username/formal-feature-attribution.git](https://github.com/your-username/formal-feature-attribution.git)
+cd formal-feature-attribution
+
+# Usando conda
+conda env create -f environment.yml
+conda activate formal-feature-attribution
+
+# Ou usando pip
+python -m venv venv
+source venv/bin/activate  # ou venv\Scripts\activate no Windows
+pip install -r requirements.txt
+
+# Instale o pacote no modo de desenvolvimento
+pip install -e .
+```
+
+### Verificação da Instalação
+
+```bash
+# Verifique se a instalação foi bem-sucedida
+python -c "import src.formal_ffa; print('✅ FFA importado com sucesso!')"
+python -c "import xgboost; import lime; print('✅ Dependências carregadas!')"
+
+# Execute testes básicos
+python -m pytest tests/ -v
+```
+## Para Desenvolvedores 
+
+```bash
+# Instalação com dependências de desenvolvimento
+pip install -r requirements.txt
+pip install -e .[dev]  # Se houver extras de desenvolvimento
+
+# Configure os hooks pre-commit (opcional)
+pre-commit install
+```
+
+
+### Principais Dependências
+
+O projeto utiliza amplamente os seguintes frameworks e *solver*:
+
+* **XGBoost**: Chen & Guestrin (2016) - Modelos ensemble.
+* **LIME**: Ribeiro et al. (2016) - Explicações locais.
+* **SHAP**: Lundberg & Lee (2017) - Valores de Shapley.
+* **Z3**: Microsoft Research - Solver SAT/SMT.
+
+---
+
+## ⚠️ Soluções para Problemas Comuns
+
+| Problema | Solução Linux/Mac | Solução Windows |
+| :--- | :--- | :--- |
+| **LIME com erro** | `$ sudo apt-get install python3-dev` (Ubuntu/Debian) ou `$ brew install python3` (Mac). | Garantir que o **Visual Studio Build Tools** está instalado. |
+| **XGBoost com erro** | Instalar alternativamente: `pip install xgboost --upgrade` ou `conda install -c conda-forge xgboost`. | O mesmo que Linux/Mac. |
+| **Conflito de versões** | Recriar o ambiente: `conda env remove -n formal-feature-attribution` e recriar com `conda env create -f environment.yml`. | O mesmo que Linux/Mac. |
