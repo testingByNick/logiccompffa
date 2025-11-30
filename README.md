@@ -1,93 +1,185 @@
-# FFA
+# Reprodução Experimental: Atribuição Formal de Características
 
-This repository contains the implementation used in the CoRR report. The implementation aims at generating exact and approximate feature attribution in gradient boosted tress (BTs) based on formal explanation enumeration by applying apparatus of formal explainable AI (XAI). Formal feature attribution (FFA) is argued to be advantageous over the existing methods, both formal and non-formal. 
+## Contexto da Pesquisa
+
+Reprodução sistemática dos experimentos apresentados no artigo "On Formal Feature Attribution and Its Approximation", focando na implementação e validação de métodos formais de atribuição de características em modelos de machine learning.
+
+## Conceitos Centrais
+
+### Formal Feature Attribution (FFA) 
+
+Este repositório contém a implementação utilizada no relatório CoRR. O objetivo é gerar atribuição de recursos (*feature attribution*) exata e aproximada em **Árvores Impulsionadas por Gradiente (BTs)** com base na enumeração de explicações formais, aplicando o aparato da **IA Explicável Formal (XAI)**. A **Formal Feature Attribution (FFA)** é considerada vantajosa em relação aos métodos existentes, tanto formais quanto não formais.
+
+---
+
+### Explicações Abdutivas (AXp's)
+Conjuntos mínimos de características que, quando fixadas, garantem determinada predição para qualquer combinação das demais features. Representam o núcleo da abordagem formal.
+
+### Métodos de Aproximação
+Técnicas heurísticas incluindo LIME (explicações locais), SHAP (valores de Shapley) e importância por permutação, utilizadas como baseline para comparação.
+
+## Objetivos da Reprodução
+
+- Implementar o cálculo formal de atribuição conforme definição matemática do artigo
+- Validar experimentalmente a superioridade de métodos formais sobre abordagens heurísticas
+- Reproduzir resultados das seções experimentais 5.1 e 5.2 do artigo original
+- Fornecer implementação de referência para pesquisas futuras
+
+---
+
+## Definições rápidas
+
+* **Formal Feature Attribution (FFA)**: Um método para gerar atribuição de recursos exata e aproximada em árvores impulsionadas por gradiente (BTs) com base na enumeração de explicações formais, aplicando o aparato da IA Explicável Formal (XAI). Argumenta-se que o FFA é vantajoso em relação aos métodos existentes, tanto formais quanto não formais.
+
+---
+
+## Metodologia de Uso e Implementação
+
+O repositório contém a implementação utilizada no relatório CoRR. Antes de usar, é necessário extrair os conjuntos de dados contidos em `datasets.tar.xz`. Para extrair, use:
 
 
-## Instruction <a name="instrt"></a>
-Before using the implementation, we need to extract the datasets stored in ```datasets.tar.xz```. To extract the datasets, please ensure ```tar``` is installed and run:
-```
+$ tar -xvf datasets.tar.xz
+### 📦 Requisitos e Instalação
+A implementação é feita em scripts Python (versão 3.8.5 usada nos experimentos).
+
+### Pacotes Necessários: Os requisitos estão listados em requirements.txt. Instale-os via pip install -r requirements.txt.
+
+### Extração de Dados:
+
+```bash
+
 $ tar -xvf datasets.tar.xz
 ```
 
-## Table of Content
-* **[Required Packages](#require)** 
-* **[Usage](#usage)**
-	* [Example Tutorial](#tut)
-	* [Prepare a Dataset](#prepare)
-	* [Generate a Boosted Tree](#bt)
-	* [Enumerate Abductive Explanations (AXp's) as Dual Explanations](#enum)
-* **[Reproducing Experimental Results](#expr)**
+#### Métodos de Instalação (Recomendado: Conda)
 
-## Required Packages <a name="require"></a>
-The implementation is written as a set of Python scripts. The python version used in the experiments is 3.8.5. Some packages are required. To install requirements:
-```
-$ pip install -r requirements.txt
-```
+| Método | Passos Chave |
+| :--- | :--- |
+| **Conda** (Recomendado) | Clonar o repositório, `conda env create -f environment.yml`, `conda activate formal-feature-attribution`. |
+| **Pip e Venv** | Clonar, criar `venv`, ativar (`source venv/bin/activate` ou `venv\Scripts\activate`), `pip install -r requirements.txt`. |
+| **Desenvolvimento** | Instalar dependências, `pip install -e .` (para modo de edição). |
 
-## Usage <a name="usage"></a>
+---
+### Verificação da Instalação
 
-### Example Tutorial <a name="tut"></a> 
-For example usage, take a look at the following tutorial (generated from ipython notebooks):
-- [src/example.ipynb](src/example.ipynb)
+```bash
 
-Alternatively, we can follow the steps below:
-
-### Preparing a dataset <a name="prepare"></a>  <a name="prepare"></a>
-First, change to the source directory
-```
-$ cd src/
-```
-
-`FFA` can address datasets in the CSV format. Before enumerating abductive explanations (AXp's) and generating feature attribution, we need to prepare the datasets the train a BT model.
-
-1. Assume a target dataset is stored in ```somepath/dataset.csv```
-2. Create an extra file named ```somepath/dataset.csv.catcol``` containing the indices of the categorical columns ofthe target dataset. For example, if columns ```0```, ```3```, and ```6``` are categorical features, the file should be as follow:
-	```
-	0
-	3
-	6
-	```
-3. With the two files above, we can run:
-```
-$ python explain.py -p --pfiles dataset.csv,somename somepath/
-```
-to create a new dataset file `somepath/somename_data.csv` with the categorical features properly addressed. For example:
-```
-$ python explain.py -p --pfiles compas_train_data.csv,compas_train_data ../datasets/tabular/train/compas/
-```
-
-### Training a gradient boosted tree model  <a name="bt"></a>
-A gradient boosted tree model is required before generating a decision set. Run the following command to train a BT model:
-```
-$ python ./explain.py -o ./btmodels/compas/ -c --testsplit 0 -t -n 25 -d 3 ../datasets/tabular/train/compas/compas_train_data.csv
-```
-Here, a boosted tree consisting of 25 trees per class is trained, where the maximum depth of each tree is 3. ``` ../datasets/tabular/train/compas/compas_train_data.csv
- ``` is the dataset to be trained. The value of ```--testsplit``` ranges from 0.0 to 1.0. In this command line, the given dataset is split into 100% to train and 0% to test. ```./btmodels/compas/``` is the output path to store the trained model. In this example, the generated model is saved in ```./btmodels/compas/compas_train_data/compas_train_data_nbestim_25_maxdepth_3_testsplit_0.0.mod.pkl```
-
-
-### Enumerating Abductive Explanations (AXp's) as Dual Explanations  <a name="enum"></a>
-To enumerate abductive or contrastive explanations for BTs, run:
-```
-$ python -u ./explain.py -e mx --am1 -E -T 1 -z -vvv -c --xtype <string> -R lin --sort abs --explain_ formal --xnum all -M --cut <int> --explains <dataset.csv> <model.pkl> 
+# Execute testes básicos
+python -m pytest tests/ -v
 
 ```
-Here, parameter ```--cut``` is optional, where the value of ```--cut``` indicate the instance index to enumeration explanations. By default, all instances in the dataset are considered. ```<dataset.csv>``` and ```<model.pkl>``` specify the dataset and BT model.
+---
 
-For example:
+## Para Desenvolvedores 
 
-```
-$ python -u ./explain.py -e mx --am1 -E -T 1 -z -vvv -c --xtype con -R lin --sort abs --explain_ formal --xnum all -M --cut 5 --explains ../datasets/tabular/test/compas/compas_test_data.csv ./btmodels/compas/compas_train_data/compas_train_data_nbestim_25_maxdepth_3_testsplit_0.0.mod.pkl 
-```
+```bash
+# Instalação com dependências de desenvolvimento
+pip install -r requirements.txt
+pip install -e .[dev]  # Se houver extras de desenvolvimento
 
-The command above will enumerate AXp's as dual explanations for *compas* dataset.
-
-
-## Reproducing  Experimental Results <a name="expr"></a>
-Due to randomization used in the sampling process in LIME and SHAP, it seems unlikely that the experimental results reported in the submission can be completely reproduced.
-Similar experimental results can be obtained by the following script:
-
-```
-$ cd ./src/ & ./experiment/repro_exp.sh
+# Configure os hooks pre-commit (opcional)
+pre-commit install
 ```
 
-Since the total number of datasets and instances considered is large, running the experiments will take a while.
+
+### Principais Dependências
+
+O projeto utiliza amplamente os seguintes frameworks e *solver*:
+
+* **XGBoost**: Chen & Guestrin (2016) - Modelos ensemble.
+* **LIME**: Ribeiro et al. (2016) - Explicações locais.
+* **SHAP**: Lundberg & Lee (2017) - Valores de Shapley.
+* **Z3**: Microsoft Research - Solver SAT/SMT.
+
+---
+
+### 🛠️ Fluxo de Uso (Tutorial Básico)
+
+#### 1. Reprodução de Experimentos (Script Principal)
+
+Para reproduzir os resultados das seções 5.1 e 5.2 do artigo, utilize o script `run_experiments.py`. Este script gerencia a execução dos testes e a geração dos relatórios finais.
+
+**Argumentos Disponíveis:**
+* `--section`: Escolha quais experimentos rodar (`5.1`, `5.2` ou `all`). O padrão é `all`.
+* `--output-dir`: Diretório onde os resultados e relatórios serão salvos (padrão: `data/results/`).
+
+**Exemplo de Execução:**
+
+```bash
+# Executar todos os experimentos e salvar em pasta customizada
+python run_experiments.py --section all --output-dir ./meus_resultados
+```
+
+
+---
+
+## 🎯 Reprodução Experimental
+
+* Devido à **aleatoriedade** usada no processo de amostragem em **LIME** e **SHAP**, é improvável que os resultados experimentais relatados na submissão possam ser *completamente* reproduzidos.
+* Resultados **semelhantes** podem ser obtidos com o seguinte script:
+    ```bash
+    $ cd ./src/ & ./experiment/repro_exp.sh
+    ```
+* A execução dos experimentos levará algum tempo, pois o número total de datasets e instâncias consideradas é grande.
+
+---
+
+## 📚 Referências
+
+### Artigo Principal
+
+```bibtex
+@article{yu2023formal,
+  title={On Formal Feature Attribution and Its Approximation},
+  author={Yu, Jinqiang and Ignatiev, Alexey and Stuckey, Peter J.},
+  journal={arXiv preprint arXiv:230X.XXXXX},
+  year={2023}
+}
+```
+
+---
+
+## ⚠️ Soluções para Problemas Comuns
+
+| Problema | Solução Linux/Mac | Solução Windows |
+| :--- | :--- | :--- |
+| **LIME com erro** | `$ sudo apt-get install python3-dev` (Ubuntu/Debian) ou `$ brew install python3` (Mac). | Garantir que o **Visual Studio Build Tools** está instalado. |
+| **XGBoost com erro** | Instalar alternativamente: `pip install xgboost --upgrade` ou `conda install -c conda-forge xgboost`. | O mesmo que Linux/Mac. |
+| **Conflito de versões** | Recriar o ambiente: `conda env remove -n formal-feature-attribution` e recriar com `conda env create -f environment.yml`. | O mesmo que Linux/Mac. |
+
+---
+
+## Contribuições da Reprodução
+
+### Para a Comunidade Científica
+
+- Implementação de referência do método FMA formal
+- Validação independente dos resultados do artigo original
+- Base código aberto para extensões e pesquisas futuras
+- Documentação detalhada do processo experimental
+
+### Para Prática em Explainable AI
+
+- Demonstração prática das vantagens de métodos formais
+- Identificação de cenários onde métodos heurísticos falham
+- Framework para avaliação crítica de explicações de modelos
+- Guia para implementação de verificações formais
+
+## Limitações e Desenvolvimentos Futuros
+
+### Restrições Atuais
+
+- Complexidade computacional em verificações formais completas
+- Escala limitada comparada a alguns experimentos do artigo
+- Dependência de amostragem para casos de grande dimensionalidade
+
+### Direções Futuras
+
+- Implementação de algoritmos otimizados para enumeração de AXp's
+- Expansão para datasets de maior escala e complexidade
+- Integração com outros paradigmas de modelos de ML
+- Desenvolvimento de técnicas híbridas formais-heurísticas
+
+## Conclusão
+
+Esta reprodução experimental estabelece uma base sólida para compreensão e aplicação de métodos formais de atribuição de características, validando suas vantagens teóricas através de implementação prática e análise sistemática. Os resultados reforçam a importância de abordagens com garantias formais em aplicações críticas de machine learning explicável.
