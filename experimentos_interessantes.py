@@ -11,6 +11,9 @@
 
 #Implementação prática (protótipo em Python, repositório do código disponível).
 
+# ..
+
+
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC_DIR="$REPO_ROOT/src"
 OUT_DIR="$SRC_DIR/experiment/results_tabular"
