@@ -1,4 +1,4 @@
- Essas funções representam chamadas ao raciocínio formal (SAT / SMT).
+#Essas funções representam chamadas ao raciocínio formal (SAT / SMT).
 import time
 from collections import defaultdict
 def model_predict(model, x):
